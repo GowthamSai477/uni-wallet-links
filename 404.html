@@ -1,0 +1,126 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Uni Wallet — Connect with a link</title>
+    <style>
+      :root {
+        color-scheme: light;
+      }
+      * {
+        box-sizing: border-box;
+      }
+      body {
+        margin: 0;
+        min-height: 100vh;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        background: #faf6ef;
+        color: #26201a;
+        font-family:
+          system-ui,
+          -apple-system,
+          "Segoe UI",
+          Roboto,
+          sans-serif;
+        padding: 24px;
+      }
+      .card {
+        background: #fff;
+        border: 1px solid #e8e0d2;
+        border-radius: 20px;
+        max-width: 420px;
+        width: 100%;
+        padding: 32px 28px;
+        text-align: center;
+        box-shadow: 0 8px 30px rgba(38, 32, 26, 0.07);
+      }
+      h1 {
+        font-size: 22px;
+        margin: 12px 0 6px;
+      }
+      p {
+        font-size: 15px;
+        line-height: 1.5;
+        color: #6b6156;
+        margin: 6px 0 18px;
+      }
+      a.btn {
+        display: block;
+        padding: 13px 18px;
+        border-radius: 12px;
+        text-decoration: none;
+        font-weight: 700;
+        font-size: 16px;
+        margin: 10px 0;
+      }
+      a.primary {
+        background: #26648e;
+        color: #fff;
+      }
+      a.secondary {
+        background: #f1e9dc;
+        color: #26201a;
+      }
+      .name {
+        font-weight: 700;
+        color: #26648e;
+      }
+      small {
+        color: #9a8f81;
+        font-size: 12.5px;
+        line-height: 1.5;
+        display: block;
+        margin-top: 14px;
+      }
+    </style>
+  </head>
+  <body>
+    <main class="card">
+      <h1 id="title">Uni Wallet</h1>
+      <p id="lede">
+        Shared expenses with people you trust — private, offline-first, end-to-end encrypted.
+      </p>
+      <a
+        class="btn primary"
+        id="open"
+        href="https://github.com/GowthamSai477/uni-wallet/releases/latest"
+        >Open in Uni Wallet</a
+      >
+      <a class="btn secondary" href="https://github.com/GowthamSai477/uni-wallet/releases/latest"
+        >Get the app</a
+      >
+      <small>
+        The link carries public identifiers only — never private keys or financial data. If the
+        button doesn't open the app, update to the latest version first.
+      </small>
+    </main>
+    <script>
+      // /uni-wallet-links/pair/v1/<base64url canonical JSON>.<checksum> — decode the
+      // name field for a friendlier prompt; the APP validates the payload for
+      // real (checksum + schema) before anything connects.
+      (function () {
+        var m = window.location.pathname.match(
+          /\/uni-wallet-links\/pair\/v1\/([A-Za-z0-9_\-]+)\.([0-9a-f]{8})$/,
+        );
+        if (m === null) return;
+        document.getElementById("open").href = "uniwallet://pair/v1/" + m[1] + "." + m[2];
+        document.getElementById("lede").textContent =
+          "Someone shared their Uni Wallet identity with you.";
+        try {
+          var b64 = m[1].replace(/-/g, "+").replace(/_/g, "/");
+          var json = JSON.parse(decodeURIComponent(escape(window.atob(b64))));
+          if (typeof json.n === "string" && json.n.length > 0) {
+            document.getElementById("title").innerHTML =
+              "Connect with <span class='name'></span> in Uni Wallet";
+            document.querySelector(".name").textContent = json.n;
+          }
+        } catch (e) {
+          /* generic copy is fine — the app does the strict parsing */
+        }
+      })();
+    </script>
+  </body>
+</html>
